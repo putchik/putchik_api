@@ -4,6 +4,7 @@ from pydantic import UUID4
 
 from app.core.auth.utils.contrib import get_current_admin, get_current_user
 from app.core.auth.utils.password import get_password_hash
+from app.core.auth.utils.sms_code import generate_sms_auth_code
 
 from app.applications.users.models import User
 from app.applications.users.schemas import BaseUserOut, BaseUserCreate, BaseUserUpdate
@@ -41,17 +42,17 @@ async def create_user(
     """
     Create new user.
     """
-    user = await User.get_by_email(email=user_in.email)
+    user = await User.find_one(User.phone_number == user_in.phone_number)
     if user:
         raise HTTPException(
             status_code=400,
-            detail="The user with this email already exists",
+            detail="The user with this phone number already exists",
         )
 
-    hashed_password = get_password_hash(user_in.password)
-    db_user = BaseUserCreate(**user_in.dict(), hashed_password=hashed_password)
-    created_user = await User.create(db_user)
-
+    # hashed_password = get_password_hash(user_in.password)
+    db_user = BaseUserCreate(**user_in.model_dump())
+    created_user = User(**db_user)
+    await created_user.save()
     return created_user
 
 
@@ -66,16 +67,6 @@ async def update_user_me(user_in: BaseUserUpdate, current_user: User = Depends(g
     if user_in.email is not None:
         current_user.email = user_in.email
 
-    await current_user.save()
-    return current_user
-
-
-@router.delete("/me/tg_id", response_model=BaseUserOut, status_code=200)
-async def delete_user_me_tg_id(current_user: User = Depends(get_current_user)):
-    """
-    Delete own user tg_id.
-    """
-    current_user.tg_id = None
     await current_user.save()
     return current_user
 
@@ -124,7 +115,7 @@ async def update_user(
             status_code=404,
             detail="The user with this username does not exist",
         )
-    user = await user.update_from_dict(user_in.dict())
+    user = await user.update_from_dict(user_in.model_dump())
     await user.save()
 
     return user

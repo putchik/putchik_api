@@ -1,5 +1,6 @@
 from fastapi.security import HTTPBasicCredentials
 from pydantic import BaseModel, EmailStr, UUID4, validator
+from pydantic_extra_types.phone_numbers import PhoneNumber
 
 import uuid
 from typing import Optional
@@ -13,26 +14,31 @@ class BaseProperties(BaseModel):
 
 class BaseUser(BaseProperties):
     uuid: UUID4 = None
-    email: Optional[EmailStr] = None
+    phone_number: str
     is_admin: Optional[bool] = False
 
 
 class BaseUserCreate(BaseProperties):
     uuid: Optional[UUID4] = None
-    email: EmailStr
-    password: str
-
+    phone_number: str
+    
     class Config:
         json_schema_extra = {
             "example": {
                 "phone_number": "+79858693770",
             }
         }
+        
 
 
 class BaseUserUpdate(BaseProperties):
     password: Optional[str]
-    email: Optional[EmailStr]
+    phone_number: Optional[EmailStr]
+    
+    
+class BaseUserUpdate(BaseProperties):
+    password: Optional[str]
+    phone_number: Optional[EmailStr]
 
 
 class BaseUserDB(BaseUser):
@@ -40,15 +46,15 @@ class BaseUserDB(BaseUser):
     password_hash: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class BaseUserOut(BaseUser):
     uuid: UUID4
-    tg_id: Optional[str]
+    phone_number: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
         json_schema_extra = {
             "example": {

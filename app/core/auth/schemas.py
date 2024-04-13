@@ -4,11 +4,13 @@ from pydantic import BaseModel, UUID4
 
 
 class CredentialsSchema(BaseModel):
-    email: Optional[str]
-    password: str
+    phone_number: str
+    code: int
 
     class Config:
-        schema_extra = {"example": {"email": "my_email@gmail.com", "password": "qwerty"}}
+        json_schema_extra = {
+            "example": {"phone_number": "+79858693770", "code": 123456}
+        }
 
 
 class JWTToken(BaseModel):

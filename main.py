@@ -12,6 +12,6 @@ async def start_database():
     await initiate_database()
 
 
-app.include_router(AuthRouter, tags=["Auth"])
+app.include_router(AuthRouter, tags=["Auth"], prefix="/api/auth/login")
 app.include_router(UserRouter, tags=["Users"], prefix="/user")
 # app.include_router(StudentRouter,tags=["Students"],prefix="/student",dependencies=[Depends(token_listener)],)
