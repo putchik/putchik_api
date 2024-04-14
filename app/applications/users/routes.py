@@ -49,10 +49,7 @@ async def create_user(
             detail="The user with this phone number already exists",
         )
 
-    # hashed_password = get_password_hash(user_in.password)
-    db_user = BaseUserCreate(**user_in.model_dump())
-    created_user = User(**db_user)
-    await created_user.save()
+    created_user = await User(**user_in.model_dump()).create()
     return created_user
 
 
@@ -64,8 +61,8 @@ async def update_user_me(user_in: BaseUserUpdate, current_user: User = Depends(g
     if user_in.password is not None:
         hashed_password = get_password_hash(user_in.password)
         current_user.hashed_password = hashed_password
-    if user_in.email is not None:
-        current_user.email = user_in.email
+    if user_in.phone_number is not None:
+        current_user.phone_number = user_in.phone_number
 
     await current_user.save()
     return current_user

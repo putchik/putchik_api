@@ -6,10 +6,10 @@ from typing import List, Optional
 
 class User(Document):
     uuid: UUID4
-    fullname: Optional[str]
+    fullname: Optional[str] = None
     phone_number: str
-    password: Optional[str]
-    is_admin: Optional[bool]
+    password: Optional[str] = None
+    is_admin: Optional[bool] = None
     sms_auth_codes: List[BackLink["SmsAuthCode"]] = Field(original_field="user")
 
     class Config:

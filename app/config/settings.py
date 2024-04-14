@@ -13,11 +13,14 @@ class Settings(BaseSettings):
     
     # sms
     SMS_CODE_EXPIRE_SECONDS: int = 60
+    SMS_API_CODE: str
+    SMS_TOKEN_SECRET_KEY : str
+    SMS_SENDER_PHONE_NUMBER: str
 
+    # application
     APPLICATIONS_MODULE: str = "applications"
     APPLICATIONS: list = ["users"]
     
-    SMS_API_CODE: str
     
     class Config:
         env_file = ".env"
